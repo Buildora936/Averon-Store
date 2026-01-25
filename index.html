@@ -1,1 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Averon Store</title>
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0f0f">
+<meta name="robots" content="noindex">
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#0f0f0f;
+  color:white;
+}
+
+/* HEADER */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 24px;
+  border-bottom:1px solid #1f1f1f;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo-icon{
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  background:linear-gradient(135deg,#ff6a00,#ff9800);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+}
+
+h1{margin:0;font-size:20px}
+
+/* BUTTONS */
+button{
+  background:#ff6a00;
+  color:black;
+  border:none;
+  padding:10px 18px;
+  border-radius:20px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+button.secondary{
+  background:#2a2a2a;
+  color:white;
+}
+
+/* MAIN */
+main{
+  padding:24px;
+}
+
+.notice{
+  max-width:700px;
+  margin:40px auto;
+  text-align:center;
+  color:#aaa;
+  line-height:1.5;
+}
+
+.apps{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:16px;
+  margin-top:30px;
+}
+
+.card{
+  background:#181818;
+  border-radius:16px;
+  padding:18px;
+  border:1px solid #262626;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.app-name{
+  font-size:18px;
+  font-weight:700;
+}
+
+.app-desc{
+  font-size:14px;
+  color:#aaa;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:auto;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">A</div>
+    <h1>Averon Store</h1>
+  </div>
+
+  <div>
+    <button id="loginBtn">Connexion</button>
+    <button id="logoutBtn" class="secondary" style="display:none">Déconnexion</button>
+  </div>
+</header>
+
+<main>
+
+  <div id="publicNotice" class="notice">
+    🔒 <strong>Averon Store est actuellement privé.</strong><br>
+    Connectez-vous pour accéder aux applications internes.
+  </div>
+
+  <div id="appsSection" style="display:none">
+    <h2>Applications internes</h2>
+
+    <div class="apps">
+
+      <!-- LUMIO -->
+      <div class="card">
+        <div class="app-name">Lumio</div>
+        <div class="app-desc">
+          Plateforme de création et diffusion de contenus :
+          vidéos, lives, livres et monétisation.
+        </div>
+
+        <div class="actions">
+          <button onclick="installLumio()">Installer</button>
+          <button class="secondary" onclick="openLumio()">Ouvrir</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB5BDmDEAhYthXogNEV2MalFL0fno7G_l8",
+  authDomain: "averon-store.firebaseapp.com",
+  projectId: "averon-store",
+  appId: "1:405353616020:web:5c1b7dd2dca374a4119a81"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const appsSection = document.getElementById("appsSection");
+const publicNotice = document.getElementById("publicNotice");
+
+loginBtn.onclick = async ()=>{
+  const email = prompt("Email");
+  const password = prompt("Mot de passe");
+  if(!email || !password) return;
+  await signInWithEmailAndPassword(auth,email,password);
+};
+
+logoutBtn.onclick = ()=>signOut(auth);
+
+onAuthStateChanged(auth,user=>{
+  if(user){
+    loginBtn.style.display="none";
+    logoutBtn.style.display="inline-block";
+    appsSection.style.display="block";
+    publicNotice.style.display="none";
+  }else{
+    loginBtn.style.display="inline-block";
+    logoutBtn.style.display="none";
+    appsSection.style.display="none";
+    publicNotice.style.display="block";
+  }
+});
+
+const LUMIO_URL = "https://buildora936.github.io/Lumio/";
+
+window.openLumio = ()=>location.href = LUMIO_URL;
+window.installLumio = ()=>location.href = LUMIO_URL;
+</script>
+
+</body>
+</html>
